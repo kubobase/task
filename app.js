@@ -84,6 +84,47 @@ document.addEventListener('DOMContentLoaded', () => {
     }
     updateDateDisplay();
 
+    function updateDateDisplay() {
+        const formatter = new Intl.DateTimeFormat('ja-JP', {
+            year: 'numeric',
+            month: 'numeric',
+            day: 'numeric',
+            weekday: 'short'
+        });
+        const parts = formatter.formatToParts(new Date());
+        const getPart = (type) => parts.find(part => part.type === type)?.value || '';
+
+        dateDisplay.textContent = `${getPart('year')}年${getPart('month')}月${getPart('day')}日 (${getPart('weekday')})`;
+    }
+
+    function scheduleDateRefresh() {
+        const now = new Date();
+        const nextMidnight = new Date(now);
+
+        nextMidnight.setHours(24, 0, 0, 0);
+
+        setTimeout(() => {
+            updateDateDisplay();
+            renderDashboard();
+            scheduleDateRefresh();
+        }, nextMidnight.getTime() - now.getTime());
+    }
+
+    function updateDateDisplay() {
+        const formatter = new Intl.DateTimeFormat('ja-JP', {
+            year: 'numeric',
+            month: 'numeric',
+            day: 'numeric',
+            weekday: 'short'
+        });
+        const parts = formatter.formatToParts(new Date());
+        const getPart = (type) => parts.find(part => part.type === type)?.value || '';
+
+        dateDisplay.textContent = `${getPart('year')}/${getPart('month')}/${getPart('day')} (${getPart('weekday')})`;
+    }
+
+    scheduleDateRefresh();
+
     // 2. Load Tasks
     function loadTasks() {
         const stored = localStorage.getItem('okubo_tasks');
