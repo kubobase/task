@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>タスク管理ダッシュボード | 業務効率化ツール</title>
-    <meta name="description" content="今日やること、優先タスク、今月中にやることを一目で把握・管理できる、業務効率化のためのモダンなタスク管理ツール。詳細な進捗率スライダー機能付き。">
+    <meta name="description" content="今日やること、優先タスク、今後やるべきことを一目で把握・管理できる、業務効率化のためのモダンなタスク管理ツール。詳細な進捗率スライダー機能付き。">
     
     <!-- Google Fonts: Outfit & Noto Sans JP -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -112,14 +112,14 @@
 
                 <div class="stat-card month-tasks-card">
                     <div class="stat-header">
-                        <span class="stat-label">今月中にやること</span>
+                        <span class="stat-label">今後やるべきこと</span>
                         <i class="fa-solid fa-calendar-days stat-icon"></i>
                     </div>
                     <div class="stat-value-container">
                         <div class="stat-value" id="month-stats-value">0 <span class="stat-unit">件</span></div>
-                        <span class="stat-meta" id="month-completed-meta">今月目標のタスク数</span>
+                        <span class="stat-meta" id="month-completed-meta">今後対応予定のタスク数</span>
                     </div>
-                    <div class="stat-desc">今月末までに完了すべきタスク</div>
+                    <div class="stat-desc">中長期で進める予定のタスク</div>
                 </div>
             </section>
 
@@ -163,12 +163,12 @@
                     </div>
                 </div>
 
-                <!-- Column 3: 今月中にやるべきこと -->
+                <!-- Column 3: 今後やるべきこと -->
                 <div class="board-column column-month" id="col-month">
                     <div class="column-header">
                         <div class="column-title-wrapper">
                             <span class="column-dot dot-month"></span>
-                            <h3>今月中にやるべきこと</h3>
+                            <h3>今後やるべきこと</h3>
                         </div>
                         <span class="column-count" id="count-month">0</span>
                     </div>
@@ -265,7 +265,7 @@
                         <select id="task-category-input" required>
                             <option value="today">今日やること</option>
                             <option value="priority">優先的にやるべきこと</option>
-                            <option value="month">今月中にやるべきこと</option>
+                            <option value="month">今後やるべきこと</option>
                         </select>
                     </div>
                     
