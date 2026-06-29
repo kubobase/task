@@ -1,0 +1,327 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>タスク管理ダッシュボード | 業務効率化ツール</title>
+    <meta name="description" content="今日やること、優先タスク、今月中にやることを一目で把握・管理できる、業務効率化のためのモダンなタスク管理ツール。詳細な進捗率スライダー機能付き。">
+    
+    <!-- Google Fonts: Outfit & Noto Sans JP -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@300;400;500;700;900&family=Outfit:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    
+    <!-- FontAwesome for Premium Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <div class="app-container">
+        <!-- Sidebar Navigation -->
+        <aside class="sidebar" id="app-sidebar">
+            <div class="sidebar-brand">
+                <i class="fa-solid fa-list-check brand-icon"></i>
+                <h2>TaskFlow</h2>
+            </div>
+            
+            <div class="sidebar-user">
+                <div class="user-avatar">
+                    <i class="fa-solid fa-user"></i>
+                </div>
+                <div class="user-info">
+                    <span class="user-welcome">こんにちは</span>
+                    <span class="user-name">大久保 翔太 様</span>
+                </div>
+            </div>
+            
+            <nav class="sidebar-menu">
+                <ul>
+                    <li class="active" id="menu-dashboard">
+                        <i class="fa-solid fa-chart-pie"></i>
+                        <span>ダッシュボード</span>
+                    </li>
+                </ul>
+            </nav>
+            
+            <div class="sidebar-footer">
+                <button id="btn-export" class="footer-btn btn-secondary" title="データをエクスポート">
+                    <i class="fa-solid fa-download"></i> エクスポート
+                </button>
+                <button id="btn-import-trigger" class="footer-btn btn-secondary" title="データをインポート">
+                    <i class="fa-solid fa-upload"></i> インポート
+                </button>
+                <input type="file" id="file-import" accept=".json" style="display: none;">
+            </div>
+        </aside>
+
+        <!-- Main Content Area -->
+        <main class="main-content">
+            <!-- Top Header -->
+            <header class="header">
+                <div class="header-title-area">
+                    <h1 class="page-title">タスク管理ダッシュボード</h1>
+                    <p class="current-date-display" id="current-date">2026年6月29日 (月)</p>
+                </div>
+                <div class="header-actions">
+                    <button id="btn-new-task" class="btn-primary">
+                        <i class="fa-solid fa-plus"></i> 新規タスク作成
+                    </button>
+                </div>
+            </header>
+
+            <!-- Statistics Overview Cards -->
+            <section class="stats-container" aria-label="タスク統計サマリー">
+                <div class="stat-card total-progress-card">
+                    <div class="stat-header">
+                        <span class="stat-label">全体進捗率</span>
+                        <i class="fa-solid fa-chart-line stat-icon"></i>
+                    </div>
+                    <div class="stat-value-container">
+                        <div class="stat-value" id="overall-progress-text">0%</div>
+                        <div class="stat-progress-bar-bg">
+                            <div class="stat-progress-bar-fill" id="overall-progress-bar" style="width: 0%"></div>
+                        </div>
+                    </div>
+                    <div class="stat-desc">全登録タスクの平均進捗率</div>
+                </div>
+
+                <div class="stat-card today-tasks-card">
+                    <div class="stat-header">
+                        <span class="stat-label">今日やること</span>
+                        <i class="fa-solid fa-calendar-day stat-icon"></i>
+                    </div>
+                    <div class="stat-value-container">
+                        <div class="stat-value" id="today-stats-value">0 <span class="stat-unit">件</span></div>
+                        <span class="stat-meta" id="today-completed-meta">完了: 0件</span>
+                    </div>
+                    <div class="stat-desc">今日期限または今日の必須タスク</div>
+                </div>
+
+                <div class="stat-card priority-tasks-card">
+                    <div class="stat-header">
+                        <span class="stat-label">優先タスク (残)</span>
+                        <i class="fa-solid fa-triangle-exclamation stat-icon"></i>
+                    </div>
+                    <div class="stat-value-container">
+                        <div class="stat-value" id="priority-stats-value">0 <span class="stat-unit">件</span></div>
+                        <span class="stat-meta" id="priority-completed-meta">未完了の優先事項</span>
+                    </div>
+                    <div class="stat-desc">早急に対応が必要な最重要タスク</div>
+                </div>
+
+                <div class="stat-card month-tasks-card">
+                    <div class="stat-header">
+                        <span class="stat-label">今月中にやること</span>
+                        <i class="fa-solid fa-calendar-days stat-icon"></i>
+                    </div>
+                    <div class="stat-value-container">
+                        <div class="stat-value" id="month-stats-value">0 <span class="stat-unit">件</span></div>
+                        <span class="stat-meta" id="month-completed-meta">今月目標のタスク数</span>
+                    </div>
+                    <div class="stat-desc">今月末までに完了すべきタスク</div>
+                </div>
+            </section>
+
+            <!-- View Switcher -->
+            <div class="view-switcher-container">
+                <button id="view-mode-category" class="switcher-btn active">
+                    <i class="fa-solid fa-folder-open"></i> 表示場所別
+                </button>
+                <button id="view-mode-status" class="switcher-btn">
+                    <i class="fa-solid fa-list-check"></i> 進捗ステータス別
+                </button>
+            </div>
+
+            <!-- Category View (3 Columns) -->
+            <section class="board-container grid-3" id="board-category-view">
+                <!-- Column 1: 今日やること -->
+                <div class="board-column column-today" id="col-today">
+                    <div class="column-header">
+                        <div class="column-title-wrapper">
+                            <span class="column-dot dot-today"></span>
+                            <h3>今日やること</h3>
+                        </div>
+                        <span class="column-count" id="count-today">0</span>
+                    </div>
+                    <div class="column-body" id="tasks-today-list">
+                        <!-- Tasks dynamically injected here -->
+                    </div>
+                </div>
+
+                <!-- Column 2: 優先的にやるべきこと -->
+                <div class="board-column column-priority" id="col-priority">
+                    <div class="column-header">
+                        <div class="column-title-wrapper">
+                            <span class="column-dot dot-priority"></span>
+                            <h3>優先的にやるべきこと</h3>
+                        </div>
+                        <span class="column-count" id="count-priority">0</span>
+                    </div>
+                    <div class="column-body" id="tasks-priority-list">
+                        <!-- Tasks dynamically injected here -->
+                    </div>
+                </div>
+
+                <!-- Column 3: 今月中にやるべきこと -->
+                <div class="board-column column-month" id="col-month">
+                    <div class="column-header">
+                        <div class="column-title-wrapper">
+                            <span class="column-dot dot-month"></span>
+                            <h3>今月中にやるべきこと</h3>
+                        </div>
+                        <span class="column-count" id="count-month">0</span>
+                    </div>
+                    <div class="column-body" id="tasks-month-list">
+                        <!-- Tasks dynamically injected here -->
+                    </div>
+                </div>
+            </section>
+
+            <!-- Status View (4 Columns) -->
+            <section class="board-container grid-4" id="board-status-view" style="display: none;">
+                <!-- Column 1: 未着手 -->
+                <div class="board-column column-unstarted" id="col-unstarted">
+                    <div class="column-header">
+                        <div class="column-title-wrapper">
+                            <span class="column-dot dot-unstarted"></span>
+                            <h3>未着手</h3>
+                        </div>
+                        <span class="column-count" id="count-unstarted">0</span>
+                    </div>
+                    <div class="column-body" id="tasks-unstarted-list">
+                        <!-- Tasks dynamically injected here -->
+                    </div>
+                </div>
+
+                <!-- Column 2: 進行中 -->
+                <div class="board-column column-inprogress" id="col-inprogress">
+                    <div class="column-header">
+                        <div class="column-title-wrapper">
+                            <span class="column-dot dot-inprogress"></span>
+                            <h3>進行中</h3>
+                        </div>
+                        <span class="column-count" id="count-inprogress">0</span>
+                    </div>
+                    <div class="column-body" id="tasks-inprogress-list">
+                        <!-- Tasks dynamically injected here -->
+                    </div>
+                </div>
+
+                <!-- Column 3: 要確認 -->
+                <div class="board-column column-confirm" id="col-confirm">
+                    <div class="column-header">
+                        <div class="column-title-wrapper">
+                            <span class="column-dot dot-confirm"></span>
+                            <h3>要確認</h3>
+                        </div>
+                        <span class="column-count" id="count-confirm">0</span>
+                    </div>
+                    <div class="column-body" id="tasks-confirm-list">
+                        <!-- Tasks dynamically injected here -->
+                    </div>
+                </div>
+
+                <!-- Column 4: 完了 -->
+                <div class="board-column column-completed" id="col-completed">
+                    <div class="column-header">
+                        <div class="column-title-wrapper">
+                            <span class="column-dot dot-completed"></span>
+                            <h3>完了</h3>
+                        </div>
+                        <span class="column-count" id="count-completed">0</span>
+                    </div>
+                    <div class="column-body" id="tasks-completed-list">
+                        <!-- Tasks dynamically injected here -->
+                    </div>
+                </div>
+            </section>
+        </main>
+    </div>
+
+    <!-- Task Create/Edit Modal Modal -->
+    <div class="modal-backdrop" id="task-modal" style="display: none;">
+        <div class="modal-card">
+            <div class="modal-header">
+                <div class="modal-title-wrapper-vertical">
+                    <span class="modal-subtitle">TASK EDITOR</span>
+                    <h3 id="modal-title">新しいタスクを追加</h3>
+                </div>
+                <button type="button" class="btn-close-modal" id="btn-close-modal">
+                    <i class="fa-solid fa-xmark"></i>
+                </button>
+            </div>
+            <form id="task-form" class="modal-body">
+                <input type="hidden" id="task-id">
+                
+                <div class="form-group">
+                    <label for="task-title-input">タスク名</label>
+                    <input type="text" id="task-title-input" required placeholder="例: 週次レポートの下書きを仕上げる">
+                </div>
+                
+                <div class="form-row">
+                    <div class="form-group flex-1">
+                        <label for="task-category-input">表示場所</label>
+                        <select id="task-category-input" required>
+                            <option value="today">今日やること</option>
+                            <option value="priority">優先的にやるべきこと</option>
+                            <option value="month">今月中にやるべきこと</option>
+                        </select>
+                    </div>
+                    
+                    <div class="form-group flex-1">
+                        <label for="task-priority-input">優先度</label>
+                        <select id="task-priority-input">
+                            <option value="高">高</option>
+                            <option value="中" selected>中</option>
+                            <option value="低">低</option>
+                        </select>
+                    </div>
+                </div>
+                
+                <div class="form-row">
+                    <div class="form-group flex-1">
+                        <label for="task-status-input">ステータス</label>
+                        <select id="task-status-input">
+                            <option value="未着手" selected>未着手</option>
+                            <option value="進行中">進行中</option>
+                            <option value="確認待ち">確認待ち</option>
+                            <option value="完了">完了</option>
+                        </select>
+                    </div>
+                    
+                    <div class="form-group flex-1">
+                        <label for="task-due-input">期限</label>
+                        <input type="date" id="task-due-input">
+                    </div>
+                </div>
+
+                <hr class="modal-divider">
+                
+                <div class="form-group">
+                    <label for="task-tag-input">カテゴリー</label>
+                    <input type="text" id="task-tag-input" placeholder="例: 会議 / 提案 / 事務処理">
+                </div>
+                
+                <div class="form-group">
+                    <label for="task-desc-input">進捗メモ</label>
+                    <textarea id="task-desc-input" placeholder="次にやること、懸念点、依頼待ちなどを記録" rows="4"></textarea>
+                </div>
+                
+                <div class="modal-footer">
+                    <button type="button" class="btn-cancel" id="btn-cancel-task">キャンセル</button>
+                    <button type="submit" class="btn-save" id="btn-save-task">保存する</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Notification Toast -->
+    <div id="toast" class="toast" role="alert" aria-live="assertive" aria-atomic="true">
+        <i class="fa-solid fa-circle-check toast-icon"></i>
+        <span class="toast-message" id="toast-message">タスクを更新しました。</span>
+    </div>
+
+    <script src="app.js"></script>
+</body>
+</html>
